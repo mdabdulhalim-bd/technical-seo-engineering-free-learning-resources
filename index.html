@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Technical SEO Engineer Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+
+  <style>
+    /* ── DESIGN TOKENS ─────────────────────────────── */
+    :root {
+      /* gradient extracted from uploaded image: cyan→violet→magenta */
+      --grad-start:   #00e5ff;
+      --grad-mid:     #7c10e8;
+      --grad-end:     #c800ff;
+
+      /* glass surfaces */
+      --surface-0:    rgba(4, 2, 16, 0.88);
+      --surface-1:    rgba(8, 4, 28, 0.92);
+      --surface-2:    rgba(14, 8, 40, 0.94);
+      --border:       rgba(200,160,255,0.20);
+      --border-strong:rgba(200,160,255,0.40);
+
+      --cyan:         #00e5ff;
+      --cyan-dim:     #60d0f0;
+      --magenta:      #e040fb;
+      --violet:       #b060ff;
+      --green:        #00ffb3;
+      --amber:        #ffc43d;
+
+      --text-primary:   #ffffff;
+      --text-secondary: #cfc0f0;
+      --text-accent:    var(--cyan);
+
+      /* category accent colours */
+      --col-core:     #00e5ff;
+      --col-perf:     #00ffb3;
+      --col-struct:   #b060ff;
+      --col-tools:    #ffc43d;
+      --col-ai:       #e040fb;
+
+      /* level pills */
+      --lvl-b-bg:  rgba(0,255,179,0.18);
+      --lvl-b-txt: #00ffb3;
+      --lvl-i-bg:  rgba(255,196,61,0.18);
+      --lvl-i-txt: #ffc43d;
+      --lvl-a-bg:  rgba(176,96,255,0.26);
+      --lvl-a-txt: #e0c0ff;
+
+      /* tag variants */
+      --tag-free-bg:  rgba(0,229,255,0.18);
+      --tag-free-txt: #00e5ff;
+      --tag-fm-bg:    rgba(255,196,61,0.18);
+      --tag-fm-txt:   #ffc43d;
+      --tag-paid-bg:  rgba(176,96,255,0.24);
+      --tag-paid-txt: #d0a0ff;
+      --tag-ai-bg:    rgba(224,64,251,0.20);
+      --tag-ai-txt:   #e040fb;
+
+      --radius: 6px;
+      --font-sans: 'Space Grotesk', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    /* ── RESET & BASE ──────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      /* === GRADIENT from uploaded image (cyan → violet → magenta) === */
+      background: linear-gradient(135deg, #00e5ff 0%, #7c10e8 52%, #c800ff 100%) fixed;
+      background-attachment: fixed;
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    /* ── OVERLAY: grid + depth blobs ──────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(ellipse 70% 45% at 15% 8%,  rgba(255,255,255,0.12) 0%, transparent 55%),
+        radial-gradient(ellipse 55% 40% at 85% 85%, rgba(255,255,255,0.08) 0%, transparent 55%),
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: auto, auto, 44px 44px, 44px 44px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── WRAPPER ───────────────────────────────────── */
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    /* ── HERO HEADER ───────────────────────────────── */
+    .hero {
+      text-align: center;
+      padding: 56px 0 48px;
+      position: relative;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 16px;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: #fff;
+      text-shadow: 0 0 40px rgba(0,229,255,0.55), 0 2px 20px rgba(0,0,0,0.35);
+      margin-bottom: 14px;
+    }
+
+    .hero-sub {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.90);
+      max-width: 540px;
+      margin: 0 auto 32px;
+      line-height: 1.6;
+    }
+
+    /* neon underline accent */
+    .hero-line {
+      width: 72px; height: 3px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.9);
+      border-radius: 2px;
+      box-shadow: 0 0 16px rgba(255,255,255,0.85), 0 0 32px rgba(0,229,255,0.55);
+    }
+
+    /* ── FILTER BAR ────────────────────────────────── */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 36px;
+      justify-content: center;
+    }
+
+    .filter-btn {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      padding: 7px 16px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,0.28);
+      background: rgba(255,255,255,0.10);
+      color: rgba(255,255,255,0.92);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .filter-btn:hover {
+      border-color: rgba(255,255,255,0.85);
+      color: #fff;
+      background: rgba(255,255,255,0.18);
+      box-shadow: 0 0 14px rgba(255,255,255,0.2);
+    }
+
+    .filter-btn.active {
+      background: rgba(255,255,255,0.22);
+      color: #fff;
+      border-color: rgba(255,255,255,0.80);
+      box-shadow: 0 0 18px rgba(255,255,255,0.3), inset 0 0 10px rgba(255,255,255,0.08);
+    }
+
+    /* ── SCROLL ANIMATION — initial hidden state ──── */
+    .section {
+      opacity: 0;
+      transform: translateY(44px);
+      transition:
+        opacity   0.58s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.58s cubic-bezier(0.22, 1, 0.36, 1),
+        border-color 0.25s,
+        box-shadow   0.25s;
+    }
+    /* staggered delay per card position */
+    .section:nth-of-type(1) { transition-delay:0.00s }
+    .section:nth-of-type(2) { transition-delay:0.05s }
+    .section:nth-of-type(3) { transition-delay:0.09s }
+    .section:nth-of-type(4) { transition-delay:0.12s }
+    .section:nth-of-type(5) { transition-delay:0.15s }
+    .section:nth-of-type(6) { transition-delay:0.18s }
+    .section:nth-of-type(7) { transition-delay:0.21s }
+    .section:nth-of-type(8) { transition-delay:0.24s }
+
+    /* visible state toggled by IntersectionObserver */
+    .section.card-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── SECTION CARDS — glass panel ───────────────── */
+    .section {
+      background: var(--surface-0);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .section:hover {
+      border-color: var(--border-strong);
+      box-shadow: 0 10px 44px rgba(0,0,0,0.30), 0 0 0 1px rgba(255,255,255,0.07);
+    }
+
+    /* category-specific left accent border */
+    .section[data-category="core"]   { border-left: 3px solid var(--col-core);   }
+    .section[data-category="perf"]   { border-left: 3px solid var(--col-perf);   }
+    .section[data-category="struct"] { border-left: 3px solid var(--col-struct); }
+    .section[data-category="tools"]  { border-left: 3px solid var(--col-tools);  }
+    .section[data-category="ai"]     { border-left: 3px solid var(--col-ai);     }
+
+    /* ── SECTION HEADER ────────────────────────────── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(8, 4, 28, 0.94);
+    }
+
+    .section-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    /* icon colours by category */
+    .section[data-category="core"]   .section-icon { color: var(--col-core);   text-shadow: 0 0 10px var(--col-core); }
+    .section[data-category="perf"]   .section-icon { color: var(--col-perf);   text-shadow: 0 0 10px var(--col-perf); }
+    .section[data-category="struct"] .section-icon { color: var(--col-struct); text-shadow: 0 0 10px var(--col-struct); }
+    .section[data-category="tools"]  .section-icon { color: var(--col-tools);  text-shadow: 0 0 10px var(--col-tools); }
+    .section[data-category="ai"]     .section-icon { color: var(--col-ai);     text-shadow: 0 0 10px var(--col-ai); }
+
+    .section-title {
+      font-size: 15.5px;
+      font-weight: 700;
+      color: #ffffff;
+      flex: 1;
+    }
+
+    .section-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .section[data-category="core"]   .section-badge { background: rgba(0,229,255,0.18);  color: #00f0ff;            border: 1px solid rgba(0,229,255,0.38); }
+    .section[data-category="perf"]   .section-badge { background: rgba(0,255,179,0.18);  color: #00ffb3;            border: 1px solid rgba(0,255,179,0.38); }
+    .section[data-category="struct"] .section-badge { background: rgba(176,96,255,0.24); color: #d0b0ff;            border: 1px solid rgba(176,96,255,0.42); }
+    .section[data-category="tools"]  .section-badge { background: rgba(255,196,61,0.18); color: #ffcc44;            border: 1px solid rgba(255,196,61,0.38); }
+    .section[data-category="ai"]     .section-badge { background: rgba(224,64,251,0.20); color: #f060ff;            border: 1px solid rgba(224,64,251,0.40); }
+
+    /* ── TABLE ─────────────────────────────────────── */
+    .table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      min-width: 540px;
+    }
+
+    thead th {
+      padding: 11px 16px;
+      text-align: left;
+      background: rgba(255,255,255,0.06);
+      color: #d8c8f8;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-strong);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--border);
+      color: #ffffff;
+      vertical-align: top;
+      line-height: 1.75;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    tbody tr {
+      transition: background 0.15s;
+    }
+
+    tbody tr:hover td {
+      background: rgba(255,255,255,0.07);
+    }
+
+    /* first column – topic name */
+    td:first-child {
+      font-weight: 600;
+      font-size: 13.5px;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+
+    /* ── LINKS ─────────────────────────────────────── */
+    a {
+      color: #a8e8ff;
+      text-decoration: none;
+      transition: color 0.15s, text-shadow 0.15s;
+    }
+
+    a:hover {
+      color: #fff;
+      text-shadow: 0 0 8px rgba(0,229,255,0.5);
+      text-decoration: underline;
+    }
+
+    /* ── LEVEL PILLS ───────────────────────────────── */
+    .level-pill {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .lvl-beginner    { background: var(--lvl-b-bg); color: var(--lvl-b-txt); border: 1px solid rgba(0,255,179,0.2); }
+    .lvl-intermediate{ background: var(--lvl-i-bg); color: var(--lvl-i-txt); border: 1px solid rgba(255,196,61,0.2); }
+    .lvl-advanced    { background: var(--lvl-a-bg); color: var(--lvl-a-txt); border: 1px solid rgba(124,58,255,0.3); }
+
+    /* ── TOPIC TAGS ────────────────────────────────── */
+    .tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin: 2px 2px 0 0;
+    }
+
+    .tag-core { background: var(--tag-free-bg); color: var(--tag-free-txt); border: 1px solid rgba(0,229,255,0.2); }
+    .tag-tool { background: var(--tag-fm-bg);   color: var(--tag-fm-txt);   border: 1px solid rgba(255,196,61,0.2); }
+    .tag-adv  { background: var(--tag-paid-bg); color: var(--tag-paid-txt); border: 1px solid rgba(124,58,255,0.3); }
+    .tag-ai   { background: var(--tag-ai-bg);   color: var(--tag-ai-txt);   border: 1px solid rgba(255,46,247,0.25); }
+
+    /* ── HIDDEN ────────────────────────────────────── */
+    .hidden { display: none !important; }
+
+    /* ── SR-ONLY ───────────────────────────────────── */
+    .sr-only {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* ── FOOTER ────────────────────────────────────── */
+    .footer {
+      text-align: center;
+      padding-top: 40px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: rgba(255,255,255,0.65);
+      letter-spacing: 0.05em;
+    }
+
+    .footer span {
+      color: #a8e8ff;
+    }
+
+    /* ── SCROLLBAR ─────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--surface-0); }
+    ::-webkit-scrollbar-thumb { background: var(--surface-2); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(200,160,255,0.70); }
+
+    /* ── RESPONSIVE: TABLET ────────────────────────── */
+    @media (max-width: 768px) {
+      .page { padding: 24px 16px 60px; }
+
+      .hero { padding: 36px 0 32px; }
+      .hero h1 { font-size: 1.75rem; }
+
+      .filter-bar { gap: 6px; }
+      .filter-btn { font-size: 10px; padding: 6px 12px; }
+
+      .section-header { padding: 14px 16px; gap: 10px; }
+      .section-title { font-size: 14px; }
+
+      thead th, td { padding: 10px 13px; }
+    }
+
+    /* ── RESPONSIVE: MOBILE ────────────────────────── */
+    @media (max-width: 480px) {
+      .page { padding: 20px 12px 56px; }
+
+      .hero { padding: 28px 0 24px; }
+      .hero h1 { font-size: 1.45rem; }
+      .hero-sub { font-size: 0.85rem; }
+
+      .filter-bar { gap: 5px; justify-content: flex-start; }
+      .filter-btn { font-size: 9px; padding: 5px 10px; letter-spacing: 0.04em; }
+
+      .section { border-radius: 8px; margin-bottom: 16px; }
+      .section-header { flex-wrap: wrap; gap: 8px; padding: 12px 14px; }
+      .section-badge { order: 3; }
+      .section-title { font-size: 13px; }
+      .section-icon { font-size: 17px; }
+
+      thead th { font-size: 10px; padding: 9px 11px; }
+      td { font-size: 13px; padding: 10px 11px; }
+      td:first-child { white-space: normal; }
+
+      .level-pill { font-size: 9px; padding: 2px 7px; }
+      .tag { font-size: 9px; }
+    }
+
+    /* ── REDUCED MOTION ────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      .section {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: border-color 0.25s, box-shadow 0.25s !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- HERO -->
+  <header class="hero">
+    <p class="hero-eyebrow">// 2026 edition</p>
+    <h1>Technical SEO Engineer<br>Complete Guide</h1>
+    <p class="hero-sub">Skills, pillars, tools, and resources — everything you need to build and audit high-performance, crawler-ready websites.</p>
+    <div class="hero-line"></div>
+  </header>
+
+  <h2 class="sr-only">Technical SEO Engineer Complete Guide — Skills, Pillars, Tools, and Resources</h2>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar" id="filters">
+    <button class="filter-btn active" data-filter="all">All topics</button>
+    <button class="filter-btn" data-filter="core">Core foundations</button>
+    <button class="filter-btn" data-filter="perf">Performance</button>
+    <button class="filter-btn" data-filter="struct">Structure &amp; data</button>
+    <button class="filter-btn" data-filter="tools">Tools &amp; audit</button>
+    <button class="filter-btn" data-filter="ai">AI &amp; GEO</button>
+  </div>
+
+  <!-- PILLAR 1 -->
+  <div class="section" data-category="core">
+    <div class="section-header">
+      <i class="ti ti-spider section-icon" aria-hidden="true"></i>
+      <p class="section-title">1. Crawling &amp; indexability</p>
+      <span class="section-badge">Core</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:22%">Topic</th><th style="width:38%">What to know</th><th style="width:24%">Blog resource</th><th style="width:16%">Level</th></tr></thead>
+        <tbody>
+          <tr><td>robots.txt</td><td>Allow/disallow directives, crawler governance, separating training bots from retrieval bots in 2026</td><td><a href="https://developers.google.com/search/docs/crawling-indexing/robots/intro" target="_blank">Google Docs — robots.txt</a></td><td><span class="level-pill lvl-beginner">Beginner</span></td></tr>
+          <tr><td>XML sitemaps</td><td>Sitemap index, image/video sitemaps, submitting via GSC, keeping sitemaps clean of non-indexable URLs</td><td><a href="https://backlinko.com/technical-seo-guide" target="_blank">Backlinko — Technical SEO</a></td><td><span class="level-pill lvl-beginner">Beginner</span></td></tr>
+          <tr><td>Crawl budget</td><td>Log file analysis, crawl traps, pagination, faceted navigation waste, controlling depth</td><td><a href="https://www.semrush.com/blog/crawl-budget/" target="_blank">Semrush — Crawl Budget</a></td><td><span class="level-pill lvl-intermediate">Intermediate</span></td></tr>
+          <tr><td>GSC indexing report</td><td>Page indexing errors, excluded pages, "Crawled but not indexed", coverage fixes</td><td><a href="https://search.google.com/search-console" target="_blank">Google Search Console</a></td><td><span class="level-pill lvl-beginner">Beginner</span></td></tr>
+          <tr><td>Log file analysis</td><td>Identify what Googlebot actually crawls, detect crawl anomalies and wasted budget</td><td><a href="https://www.screamingfrog.co.uk/log-file-analyser/" target="_blank">Screaming Frog — Log Analyser</a></td><td><span class="level-pill lvl-advanced">Advanced</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PILLAR 2 -->
+  <div class="section" data-category="perf">
+    <div class="section-header">
+      <i class="ti ti-gauge section-icon" aria-hidden="true"></i>
+      <p class="section-title">2. Core Web Vitals &amp; page speed</p>
+      <span class="section-badge">Performance</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:22%">Topic</th><th style="width:38%">What to know</th><th style="width:24%">Blog resource</th><th style="width:16%">Level</th></tr></thead>
+        <tbody>
+          <tr><td>LCP (Largest Contentful Paint)</td><td>Target &lt;2.5s. Preload hero images, optimize TTFB, use WebP/AVIF, CDN edge caching</td><td><a href="https://web.dev/lcp/" target="_blank">web.dev — LCP</a></td><td><span class="level-pill lvl-intermediate">Intermediate</span></td></tr>
+          <tr><td>INP (Interaction to Next Paint)</td><td>Replaced FID in 2024. Target &lt;200ms. Reduce long tasks, defer JS, use scheduler API</td><td><a href="https://web.dev/inp/" target="_blank">web.dev — INP</a></td><td><span class="level-pill lvl-advanced">Advanced</span></td></tr>
+          <tr><td>CLS (Cumulative Layout Shift)</td><td>Target &lt;0.1. Reserve image/ad dimensions, avoid inserting above-fold DOM nodes after load</td><td><a href="https://web.dev/cls/" target="_blank">web.dev — CLS</a></td><td><span class="level-pill lvl-intermediate">Intermediate</span></td></tr>
+          <tr><td>TTFB &amp; server perf</td><td>Target &lt;600ms. CDN choice, edge caching, server response time, HTTP/3, compression (Brotli)</td><td><a href="https://www.debugbear.com/blog/technical-seo-checklist" target="_blank">DebugBear — CWV Guide</a></td><td><span class="level-pill lvl-intermediate">Intermediate</span></td></tr>
+          <tr><td>Image optimization</td><td>WebP/AVIF formats, lazy loading, responsive srcset, proper sizing, CDN delivery</td><td><a href="https://developers.google.com/search/docs/appearance/google-images" target="_blank">Google — Image best practices</a></td><td><span class="level-pill lvl-beginner">Beginner</span></td></tr>
+          <tr><td>JavaScript rendering</td><td>SSR vs CSR vs SSG, hydration, dynamic rendering, ensuring HTML isn't JS-dependent for crawlers</td><td><a href="https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics" target="_blank">Google — JS SEO basics</a></td><td><span class="level-pill lvl-advanced">Advanced</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PILLAR 3 -->
+  <div class="section" data-category="struct">
+    <div class="section-header">
+      <i class="ti ti-sitemap section-icon" aria-hidden="true"></i>
+      <p class="section-title">3. Site architecture &amp; URL structure</p>
+      <span class="section-badge">Structure</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:22%">Topic</th><th style="width:38%">What to know</th><th style="width:24%">Blog resource</th><th style="width:16%">Level</th></tr></thead>
+        <tbody>
+          <tr><td>URL structure</td><td>Short, keyword-rich slugs; consistent casing; hyphens not underscores; avoid params where possible</td><td><a href="https://developers.google.com/search/docs/crawling-indexing/url-structure" target="_blank">Google — URL structure</a></td><td><span class="level-pill lvl-beginner">Beginner</span></td></tr>
+          <tr><td>Internal linking</td><td>Flat architecture (max 3 clicks from homepage), link equity flow, anchor text optimization</td><td><a href="https://ahrefs.com/blog/internal-links-for-seo/" target="_blank">Ahrefs — Internal linking</a></td><td><span class="level-pill lvl-intermediate">Intermediate</span></td></tr>
+          <tr><td>Canonical tags</td><td>Prevent duplicate content, self-referencing canonicals, cross-domain canonicalization, pagination</td><td><a href="https://moz.com/learn/seo/canonicalization" target="_blank">Moz — Canonicalization</a></td><td><span class="level-pill lvl-intermediate">Intermediate</span></td></tr>
+          <tr><td>Redirects (3xx)</td><td>301 vs 302 vs 307, redirect chains, using 301s on URL changes, monitoring redirect health</td><td><a href="https://www.semrush.com/blog/301-redirect/" target="_blank">Semrush — Redirect guide</a></td><td><span class="level-pill lvl-beginner">Beginner</span></td></tr>
+          <tr><td>Hreflang</td><td>International SEO, language/region targeting, hreflang XML or HTTP header implementation</td><td><a href="https://developers.google.com/search/docs/specialty/international/localization-vs-adaptation" target="_blank">Google — International SEO</a></td><td><span class="level-pill lvl-advanced">Advanced</span></td></tr>
+          <tr><td>Pagination</td><td>Handling paginated content, avoiding thin pages, self-canonicals on paginated URLs</td><td><a href="https://developers.google.com/search/docs/specialty/ecommerce/pagination-and-incremental-page-loading" target="_blank">Google — Pagination</a></td><td><span class="level-pill lvl-intermediate">Intermediate</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PILLAR 4 -->
+  <div class="section" data-category="struct">
+    <div class="section-header">
+      <i class="ti ti-code section-icon" aria-hidden="true"></i>
+      <p class="section-title">4. Structured data &amp; schema markup</p>
+      <span class="section-badge">Structure</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:22%">Topic</th><th style="width:38%">What to know</th><th style="width:24%">Blog resource</th><th style="width:16%">Level</th></tr></thead>
+        <tbody>
+          <tr><td>JSON-LD basics</td><td>Preferred format for structured data; placed in &lt;head&gt; or &lt;body&gt;; Google's recommended method</td><td><a href="https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data" target="_blank">Google — Structured data intro</a></td><td><span class="level-pill lvl-beginner">Beginner</span></td></tr>
+          <tr><td>Key schema types</td><td>Article, Product, FAQ, HowTo, LocalBusiness, BreadcrumbList, Organization, Review, Event</td><td><a href="https://schema.org/docs/full.html" target="_blank">Schema.org — Full hierarchy</a></td><td><span class="level-pill lvl-intermediate">Intermediate</span></td></tr>
+          <tr><td>Rich results testing</td><td>Validate markup via Rich Results Test; monitor in GSC Enhancements; target rich snippet types</td><td><a href="https://search.google.com/test/rich-results" target="_blank">Google Rich Results Test</a></td><td><span class="level-pill lvl-beginner">Beginner</span></td></tr>
+          <tr><td>E-E-A-T &amp; entity SEO</td><td>Author schema, Organization schema, linking content to real entities and knowledge graph nodes</td><td><a href="https://www.thehoth.com/blog/seo-technical-checklist/" target="_blank">The HOTH — Schema &amp; E-E-A-T</a></td><td><span class="level-pill lvl-advanced">Advanced</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PILLAR 5 -->
+  <div class="section" data-category="core">
+    <div class="section-header">
+      <i class="ti ti-device-mobile section-icon" aria-hidden="true"></i>
+      <p class="section-title">5. Mobile-first indexing &amp; HTTPS</p>
+      <span class="section-badge">Core</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:22%">Topic</th><th style="width:38%">What to know</th><th style="width:24%">Blog resource</th><th style="width:16%">Level</th></tr></thead>
+        <tbody>
+          <tr><td>Mobile-first indexing</td><td>Google uses mobile version for ranking since 2023. Content parity, viewport meta, mobile UX</td><td><a href="https://developers.google.com/search/docs/crawling-indexing/mobile/mobile-sites-mobile-first-indexing" target="_blank">Google — Mobile-first indexing</a></td><td><span class="level-pill lvl-beginner">Beginner</span></td></tr>
+          <tr><td>HTTPS &amp; TLS</td><td>HTTPS as a ranking signal, TLS 1.3, mixed content errors, HSTS headers, SSL cert management</td><td><a href="https://developers.google.com/search/docs/crawling-indexing/site-move-with-url-changes" target="_blank">Google — HTTPS migration</a></td><td><span class="level-pill lvl-beginner">Beginner</span></td></tr>
+          <tr><td>Mobile usability</td><td>Tap target sizes, readable font sizes, no horizontal scroll, no intrusive interstitials</td><td><a href="https://search.google.com/search-console/mobile-usability" target="_blank">GSC — Mobile usability</a></td><td><span class="level-pill lvl-beginner">Beginner</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PILLAR 6 -->
+  <div class="section" data-category="tools">
+    <div class="section-header">
+      <i class="ti ti-tools section-icon" aria-hidden="true"></i>
+      <p class="section-title">6. Tools &amp; SEO auditing</p>
+      <span class="section-badge">Tools</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:22%">Tool</th><th style="width:38%">Use case</th><th style="width:24%">Link</th><th style="width:16%">Cost</th></tr></thead>
+        <tbody>
+          <tr><td>Google Search Console</td><td>Indexing, coverage errors, CWV field data, mobile usability, search performance — start here</td><td><a href="https://search.google.com/search-console" target="_blank">search.google.com/search-console</a></td><td><span class="tag tag-core">Free</span></td></tr>
+          <tr><td>Screaming Frog SEO Spider</td><td>Full site crawl, broken links, redirect chains, canonical issues, hreflang validation</td><td><a href="https://www.screamingfrog.co.uk/seo-spider/" target="_blank">screamingfrog.co.uk</a></td><td><span class="tag tag-tool">Freemium</span></td></tr>
+          <tr><td>Ahrefs / Semrush Site Audit</td><td>Automated technical audits, health scores, crawlability reports, backlink profiles</td><td><a href="https://ahrefs.com/site-audit" target="_blank">ahrefs.com/site-audit</a></td><td><span class="tag tag-adv">Paid</span></td></tr>
+          <tr><td>Google PageSpeed Insights</td><td>CWV lab &amp; field data, Lighthouse scores, optimization suggestions per URL</td><td><a href="https://pagespeed.web.dev/" target="_blank">pagespeed.web.dev</a></td><td><span class="tag tag-core">Free</span></td></tr>
+          <tr><td>DebugBear</td><td>Real-user monitoring for CWV, historical tracking, render-blocking analysis</td><td><a href="https://www.debugbear.com/" target="_blank">debugbear.com</a></td><td><span class="tag tag-tool">Freemium</span></td></tr>
+          <tr><td>Chrome DevTools</td><td>Network waterfall, rendering pipeline, performance profiling, coverage panel for unused JS/CSS</td><td><a href="https://developer.chrome.com/docs/devtools/" target="_blank">developer.chrome.com/devtools</a></td><td><span class="tag tag-core">Free</span></td></tr>
+          <tr><td>Cloudflare / Fastly (CDN)</td><td>Edge caching, TTFB reduction, image optimization, DDoS protection</td><td><a href="https://www.cloudflare.com/" target="_blank">cloudflare.com</a></td><td><span class="tag tag-tool">Freemium</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PILLAR 7 -->
+  <div class="section" data-category="ai">
+    <div class="section-header">
+      <i class="ti ti-robot section-icon" aria-hidden="true"></i>
+      <p class="section-title">7. AI readiness &amp; GEO (2026)</p>
+      <span class="section-badge">AI &amp; GEO</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:22%">Topic</th><th style="width:38%">What to know</th><th style="width:24%">Blog resource</th><th style="width:16%">Level</th></tr></thead>
+        <tbody>
+          <tr><td>AI crawler governance</td><td>robots.txt now governs training bots (GPTBot, ClaudeBot) vs retrieval bots. Decide per use case</td><td><a href="https://www.debugbear.com/blog/technical-seo-checklist" target="_blank">DebugBear — AI SEO 2026</a></td><td><span class="level-pill lvl-intermediate">Intermediate</span></td></tr>
+          <tr><td>GEO (Generative Engine Optimization)</td><td>Structure content for RAG chunking: BLUF method, semantic HTML, concise factual statements</td><td><a href="https://www.yotpo.com/blog/full-technical-seo-checklist/" target="_blank">Yotpo — GEO checklist</a></td><td><span class="level-pill lvl-advanced">Advanced</span></td></tr>
+          <tr><td>Google AI Overviews readiness</td><td>Appear in AI Overviews via structured data, E-E-A-T signals, cited source optimization</td><td><a href="https://www.thehoth.com/blog/seo-technical-checklist/" target="_blank">The HOTH — AI Overviews</a></td><td><span class="level-pill lvl-advanced">Advanced</span></td></tr>
+          <tr><td>Semantic HTML for LLMs</td><td>Use proper heading hierarchy, semantic tags (&lt;article&gt;, &lt;section&gt;), avoid JS-locked content</td><td><a href="https://omarelshair-seo.com/technical-seo-guide-2026/" target="_blank">SEO Detective — 2026 guide</a></td><td><span class="level-pill lvl-intermediate">Intermediate</span></td></tr>
+          <tr><td>Decentralized search</td><td>Optimize for vertical platforms (YouTube, TikTok, Amazon) alongside Google and AI answer engines</td><td><a href="https://www.yotpo.com/blog/full-technical-seo-checklist/" target="_blank">Yotpo — Decentralized search</a></td><td><span class="level-pill lvl-advanced">Advanced</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PILLAR 8 -->
+  <div class="section" data-category="tools">
+    <div class="section-header">
+      <i class="ti ti-books section-icon" aria-hidden="true"></i>
+      <p class="section-title">8. Learning resources &amp; tutorials</p>
+      <span class="section-badge">Study</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:26%">Resource</th><th style="width:34%">What you learn</th><th style="width:24%">Link</th><th style="width:16%">Level</th></tr></thead>
+        <tbody>
+          <tr><td>Google Search Central Docs</td><td>Official documentation — crawling, indexing, structured data, CWV, sitemaps</td><td><a href="https://developers.google.com/search/docs" target="_blank">developers.google.com/search</a></td><td><span class="level-pill lvl-beginner">Beginner</span></td></tr>
+          <tr><td>Backlinko Technical SEO Guide</td><td>Comprehensive walkthrough by Brian Dean — site structure, crawling, speed</td><td><a href="https://backlinko.com/technical-seo-guide" target="_blank">backlinko.com</a></td><td><span class="level-pill lvl-beginner">Beginner</span></td></tr>
+          <tr><td>Ahrefs Blog</td><td>Deep-dives: internal linking, log files, crawl budget, hreflang, JS SEO</td><td><a href="https://ahrefs.com/blog/" target="_blank">ahrefs.com/blog</a></td><td><span class="level-pill lvl-intermediate">Intermediate</span></td></tr>
+          <tr><td>web.dev (Google)</td><td>Core Web Vitals, performance APIs, rendering, JavaScript optimization</td><td><a href="https://web.dev/learn/" target="_blank">web.dev/learn</a></td><td><span class="level-pill lvl-intermediate">Intermediate</span></td></tr>
+          <tr><td>Moz Learn SEO</td><td>Foundational technical SEO concepts, glossary, on-page + off-page</td><td><a href="https://moz.com/learn/seo" target="_blank">moz.com/learn/seo</a></td><td><span class="level-pill lvl-beginner">Beginner</span></td></tr>
+          <tr><td>CrawlVision Blog</td><td>Advanced crawling strategies, indexing logic, log file tutorials</td><td><a href="https://crawlvision.com/blog/" target="_blank">crawlvision.com/blog</a></td><td><span class="level-pill lvl-advanced">Advanced</span></td></tr>
+          <tr><td>Udemy — Technical SEO Beginner to Advanced 2026</td><td>Hands-on course: audits, schema, GSC, page speed, Open Graph, breadcrumbs</td><td><a href="https://www.udemy.com/course/technical-seo-course-beginner-to-advanced/" target="_blank">udemy.com</a></td><td><span class="level-pill lvl-beginner">Beginner</span></td></tr>
+          <tr><td>Google Search Central YouTube</td><td>Video walkthroughs, office hours with John Mueller, live Q&amp;A sessions</td><td><a href="https://www.youtube.com/@GoogleSearchCentral" target="_blank">YouTube — GSC</a></td><td><span class="level-pill lvl-beginner">Beginner</span></td></tr>
+          <tr><td>DebugBear Blog</td><td>Real-world CWV optimization, render-blocking, monitoring setups</td><td><a href="https://www.debugbear.com/blog" target="_blank">debugbear.com/blog</a></td><td><span class="level-pill lvl-intermediate">Intermediate</span></td></tr>
+          <tr><td>Screaming Frog Blog</td><td>Advanced crawling tutorials, log analysis, site migration guides</td><td><a href="https://www.screamingfrog.co.uk/blog/" target="_blank">screamingfrog.co.uk/blog</a></td><td><span class="level-pill lvl-advanced">Advanced</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>Technical SEO Engineer Guide &nbsp;·&nbsp; <span>2026 Edition</span></p>
+  </footer>
+
+</div><!-- /page -->
+
+<script>
+  /* ── FILTER ──────────────────────────────────────── */
+  const btns     = document.querySelectorAll('.filter-btn');
+  const sections = document.querySelectorAll('.section[data-category]');
+  const catMap   = { core:['core'], perf:['perf'], struct:['struct'], tools:['tools'], ai:['ai'] };
+
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const f = btn.dataset.filter;
+      sections.forEach(s => {
+        const show = f === 'all' || (catMap[f] && catMap[f].includes(s.dataset.category));
+        if (show) {
+          s.classList.remove('hidden');
+          /* re-trigger entrance animation for newly revealed cards */
+          s.classList.remove('card-visible');
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            s.classList.add('card-visible');
+          }));
+        } else {
+          s.classList.add('hidden');
+        }
+      });
+    });
+  });
+
+  /* ── SCROLL ANIMATION ────────────────────────────── */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('card-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.07,
+    rootMargin: '0px 0px -50px 0px'
+  });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
