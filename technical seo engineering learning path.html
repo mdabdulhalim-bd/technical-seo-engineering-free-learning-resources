@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>URL Verification Status — Technical SEO Resources</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.19.0/iconfont/tabler-icons.min.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    /*
+      Zoomit brand palette extracted from logo:
+      --dark-bg      : #0d1f0e   (very dark forest green — page background)
+      --surface      : #132914   (dark green — card background)
+      --surface-2    : #1a3a1c   (slightly lighter — thead)
+      --border       : #2a4d2c   (subtle green border)
+      --border-bright: #3d6b40   (visible divider)
+      --text-primary : #e8f5e9   (near-white with green tint — max readability)
+      --text-secondary:#a5c9a7   (soft green — secondary labels)
+      --text-muted   : #6a9e6d   (muted green — thead, notes)
+      --accent-lime  : #7ed957   (bright lime — from magnifier circle in logo)
+      --accent-mid   : #4caf50   (mid green — links, section icons)
+      --warn-amber   : #f0b429   (amber — redirected badge)
+    */
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0d1f0e;
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: #e8f5e9;
+    }
+
+    /* ── Wave background ── */
+    .wave-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .wave-layer {
+      position: absolute;
+      width: 200%;
+      bottom: 0;
+    }
+    .wave-layer svg { width: 100%; display: block; }
+
+    .wave1 { animation: waveMove 11s linear infinite;         opacity: 0.22; bottom: -10px; }
+    .wave2 { animation: waveMove 15s linear infinite reverse; opacity: 0.15; bottom: -30px; }
+    .wave3 { animation: waveMove 20s linear infinite;         opacity: 0.10; bottom: -55px; }
+
+    @keyframes waveMove {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Ambient glow orbs */
+    .orb {
+      position: fixed;
+      border-radius: 9999px;
+      filter: blur(100px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .orb-1 { width: 560px; height: 560px; background: #2e7d32; opacity: 0.22; top: -140px; left: -120px; }
+    .orb-2 { width: 420px; height: 420px; background: #7ed957; opacity: 0.08; top: 38%; right: -100px; }
+    .orb-3 { width: 320px; height: 320px; background: #1b5e20; opacity: 0.18; bottom: 40px; left: 28%; }
+
+    /* ── Page wrapper ── */
+    .page {
+      position: relative;
+      z-index: 10;
+      max-width: 1020px;
+      margin: 0 auto;
+      padding: 2.8rem 1.5rem 7rem;
+    }
+
+    /* ── Logo + header ── */
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 0.4rem;
+    }
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      font-size: 1.55rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      user-select: none;
+    }
+    .logo-z  { color: #4caf50; }
+    .logo-o1 { color: #e8f5e9; }
+    .logo-lens {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.15em;
+      height: 1.15em;
+      border-radius: 50%;
+      background: #7ed957;
+      color: #0d1f0e;
+      font-size: 0.62em;
+      margin: 0 1px;
+      position: relative;
+      top: -1px;
+    }
+    .logo-rest { color: #a5c9a7; }
+
+    .page-title {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: #e8f5e9;
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+    }
+    .page-subtitle {
+      font-size: 0.82rem;
+      color: #6a9e6d;
+      margin-top: 0.25rem;
+      margin-bottom: 1.75rem;
+    }
+
+    /* ── Stat chips ── */
+    .stat-row {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    .stat-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      border-radius: 9999px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      border: 1px solid transparent;
+    }
+    .chip-green  { background: rgba(78,160,64,0.15); color: #7ed957; border-color: rgba(126,217,87,0.25); }
+    .chip-amber  { background: rgba(240,180,41,0.13); color: #f0b429; border-color: rgba(240,180,41,0.28); }
+    .chip-teal   { background: rgba(76,175,80,0.12);  color: #a5c9a7; border-color: rgba(165,201,167,0.2); }
+
+    /* ── Section header ── */
+    .sec-head {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #6a9e6d;
+      padding: 1.6rem 0 0.65rem;
+      border-bottom: 1px solid #2a4d2c;
+      margin-bottom: 0;
+    }
+    .sec-head i { color: #7ed957; font-size: 0.95rem; }
+
+    /* ── Table card ── */
+    .table-card {
+      background: rgba(19, 41, 20, 0.75);
+      border: 1px solid #2a4d2c;
+      border-radius: 10px;
+      overflow: hidden;
+      backdrop-filter: blur(14px);
+      margin-bottom: 0.35rem;
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+
+    thead th {
+      padding: 9px 14px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: #6a9e6d;
+      background: rgba(13, 31, 14, 0.6);
+      border-bottom: 1px solid #2a4d2c;
+      text-align: left;
+    }
+
+    tbody td {
+      padding: 11px 14px;
+      font-size: 0.84rem;
+      color: #b8dcba;           /* soft green — readable on dark bg */
+      border-bottom: 1px solid rgba(42,77,44,0.5);
+      vertical-align: middle;
+      line-height: 1.5;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td {
+      background: rgba(78,160,64,0.07);
+      color: #ddf0de;
+    }
+
+    td.chan-name {
+      font-weight: 600;
+      color: #ddf0de;           /* bright near-white-green — highest contrast */
+    }
+
+    /* ── Links ── */
+    a {
+      color: #5dba62;
+      text-decoration: none;
+      font-size: 0.81rem;
+      transition: color 0.15s;
+    }
+    a:hover { color: #7ed957; text-decoration: underline; }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+      letter-spacing: 0.03em;
+    }
+    .live {
+      background: rgba(126,217,87,0.12);
+      color: #7ed957;
+      border: 1px solid rgba(126,217,87,0.3);
+    }
+    .fixed {
+      background: rgba(240,180,41,0.12);
+      color: #f0b429;
+      border: 1px solid rgba(240,180,41,0.3);
+    }
+
+    /* ── Note cell ── */
+    td.note-cell {
+      font-size: 0.76rem;
+      color: #6a9e6d;
+    }
+    td.note-cell a { font-size: 0.76rem; }
+
+    /* ── Summary banner ── */
+    .summary-banner {
+      margin-top: 1.75rem;
+      padding: 15px 18px;
+      background: linear-gradient(135deg, rgba(78,160,64,0.14), rgba(30,80,30,0.18));
+      border: 1px solid rgba(126,217,87,0.22);
+      border-radius: 10px;
+      backdrop-filter: blur(10px);
+    }
+    .summary-banner .s-title {
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: #7ed957;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 5px;
+    }
+    .summary-banner .s-body {
+      font-size: 0.79rem;
+      color: #a5c9a7;
+      line-height: 1.6;
+    }
+
+    /* ── Mobile responsive ── */
+    @media (max-width: 640px) {
+      thead { display: none; }
+      tbody tr { display: block; padding: 10px 0; border-bottom: 1px solid #2a4d2c; }
+      tbody td { display: block; border: none; padding: 2px 14px; }
+      td.chan-name { font-size: 0.9rem; padding-top: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- Animated waves -->
+  <div class="wave-bg" aria-hidden="true">
+    <div class="wave-layer wave1">
+      <svg viewBox="0 0 1440 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <path d="M0,80 C180,160 360,0 540,80 C720,160 900,0 1080,80 C1260,160 1440,0 1440,80 L1440,200 L0,200 Z" fill="#2e7d32"/>
+      </svg>
+    </div>
+    <div class="wave-layer wave2">
+      <svg viewBox="0 0 1440 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <path d="M0,100 C200,40 400,160 600,100 C800,40 1000,160 1200,100 C1350,60 1440,120 1440,100 L1440,200 L0,200 Z" fill="#1b5e20"/>
+      </svg>
+    </div>
+    <div class="wave-layer wave3">
+      <svg viewBox="0 0 1440 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <path d="M0,120 C240,60 480,180 720,120 C960,60 1200,180 1440,120 L1440,200 L0,200 Z" fill="#4caf50"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="page">
+
+    <!-- Brand header -->
+    <div class="brand-row">
+      <div class="brand-logo" aria-label="ZOOM IT">
+        <img src="https://thezoomit.com/_next/image/?url=%2Flogo%2Fnavber.png&w=384&q=75" alt="ZOOM IT">
+      </div>
+    </div>
+
+    <h1 class="page-title">Technical SEO Engineer Learning Path</h1>
+    <p class="page-subtitle">Technical SEO video resources &mdash; verified June 2026</p>
+
+    <!-- Quick stats -->
+    <div class="stat-row">
+      <span class="stat-chip chip-green"><i class="ti ti-circle-check"></i> 16 Live URLs</span>
+      <span class="stat-chip chip-amber"><i class="ti ti-refresh"></i> 1 Redirected</span>
+      <span class="stat-chip chip-teal"><i class="ti ti-layout-list"></i> 17 Total Resources</span>
+    </div>
+
+    <!-- ── Official Google ── -->
+    <div class="sec-head"><i class="ti ti-brand-google"></i> Official Google Channels</div>
+    <div class="table-card">
+      <table>
+        <thead><tr>
+          <th style="width:28%">Channel / Resource</th>
+          <th style="width:36%">Verified URL</th>
+          <th style="width:16%">Status</th>
+          <th style="width:20%">Note</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td class="chan-name">Google Search Central</td>
+            <td><a href="https://www.youtube.com/channel/UCWf2ZlNsCGDS89VBF_awNvA" target="_blank">youtube.com — Google Search Central</a></td>
+            <td><span class="badge live"><i class="ti ti-circle-check"></i> Live</span></td>
+            <td>Confirmed active</td>
+          </tr>
+          <tr>
+            <td class="chan-name">GSC Office Hours Playlist</td>
+            <td><a href="https://www.youtube.com/playlist?list=PLKoqnv2vTMUM3TK0pPudBFEMz3qTa5URm" target="_blank">Office Hours Playlist</a></td>
+            <td><span class="badge live"><i class="ti ti-circle-check"></i> Live</span></td>
+            <td>Confirmed active</td>
+          </tr>
+          <tr>
+            <td class="chan-name">Chrome Developers</td>
+            <td><a href="https://www.youtube.com/@ChromeDevs" target="_blank">youtube.com/@ChromeDevs</a></td>
+            <td><span class="badge live"><i class="ti ti-circle-check"></i> Live</span></td>
+            <td>Active channel (confirmed via search)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ── Beginner ── -->
+    <div class="sec-head"><i class="ti ti-school"></i> Beginner Channels</div>
+    <div class="table-card">
+      <table>
+        <thead><tr>
+          <th style="width:28%">Channel</th>
+          <th style="width:36%">Verified URL</th>
+          <th style="width:16%">Status</th>
+          <th style="width:20%">Note</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td class="chan-name">Ahrefs (main channel)</td>
+            <td><a href="https://www.youtube.com/c/AhrefsCom" target="_blank">youtube.com/c/AhrefsCom</a></td>
+            <td><span class="badge live"><i class="ti ti-circle-check"></i> Live</span></td>
+            <td>Confirmed active, 450K+ subs</td>
+          </tr>
+          <tr>
+            <td class="chan-name">Ahrefs Tutorials Playlist</td>
+            <td><a href="https://www.youtube.com/playlist?list=PLVNViIU5-SxEU7OjNmYHv6HdozwxKKqyA" target="_blank">Ahrefs Tutorials (29 videos)</a></td>
+            <td><span class="badge live"><i class="ti ti-circle-check"></i> Live</span></td>
+            <td>29 videos confirmed</td>
+          </tr>
+          <tr>
+            <td class="chan-name">Ahrefs Academy</td>
+            <td><a href="https://ahrefs.com/academy/ahrefs-youtube" target="_blank">ahrefs.com/academy</a></td>
+            <td><span class="badge live"><i class="ti ti-circle-check"></i> Live</span></td>
+            <td>Free course — confirmed active</td>
+          </tr>
+          <tr>
+            <td class="chan-name">Semrush</td>
+            <td><a href="https://www.youtube.com/@Semrush" target="_blank">youtube.com/@Semrush</a></td>
+            <td><span class="badge live"><i class="ti ti-circle-check"></i> Live</span></td>
+            <td>Active (confirmed via search)</td>
+          </tr>
+          <tr>
+            <td class="chan-name">Moz (Whiteboard Friday)</td>
+            <td><a href="https://www.youtube.com/channel/UCs26XZBwrSZLiTEH8wcoVXw" target="_blank">youtube.com — Moz</a></td>
+            <td><span class="badge live"><i class="ti ti-circle-check"></i> Live</span></td>
+            <td>Active, latest video June 2025</td>
+          </tr>
+          <tr>
+            <td class="chan-name">Moz Whiteboard Friday Playlist</td>
+            <td><a href="https://www.youtube.com/playlist?list=PLm6r5IqlvI1arJT2eM7AsFLwj7fKfth0q" target="_blank">Whiteboard Fridays (151 videos)</a></td>
+            <td><span class="badge live"><i class="ti ti-circle-check"></i> Live</span></td>
+            <td>151 videos confirmed</td>
+          </tr>
+          <tr>
+            <td class="chan-name">Nathan Gotch</td>
+            <td><a href="https://www.youtube.com/channel/UCNEsahyXxNJvYNsMhru-UzQ" target="_blank">youtube.com — Nathan Gotch</a></td>
+            <td><span class="badge live"><i class="ti ti-circle-check"></i> Live</span></td>
+            <td>Active, videos in 2025–2026</td>
+          </tr>
+          <tr>
+            <td class="chan-name">Rank Math</td>
+            <td><a href="https://www.youtube.com/channel/UCI87SVbB_RAVCMubmVa3SIA" target="_blank">youtube.com — Rank Math SEO</a></td>
+            <td><span class="badge live"><i class="ti ti-circle-check"></i> Live</span></td>
+            <td>Confirmed active</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ── Intermediate / Advanced ── -->
+    <div class="sec-head"><i class="ti ti-code"></i> Intermediate / Advanced Channels</div>
+    <div class="table-card">
+      <table>
+        <thead><tr>
+          <th style="width:28%">Channel</th>
+          <th style="width:36%">Verified URL</th>
+          <th style="width:16%">Status</th>
+          <th style="width:20%">Note</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td class="chan-name">Crawling Mondays (Aleyda Solis)</td>
+            <td><a href="https://www.youtube.com/c/crawlingmondaysbyaleyda" target="_blank">youtube.com — Crawling Mondays</a></td>
+            <td><span class="badge live"><i class="ti ti-circle-check"></i> Live</span></td>
+            <td>Active, 2025–2026 uploads</td>
+          </tr>
+          <tr>
+            <td class="chan-name">Matt Diggity</td>
+            <td><a href="https://www.youtube.com/MattDiggity" target="_blank">youtube.com/MattDiggity</a></td>
+            <td><span class="badge live"><i class="ti ti-circle-check"></i> Live</span></td>
+            <td>Confirmed active, 2025 uploads</td>
+          </tr>
+          <tr>
+            <td class="chan-name">SEO Fight Club</td>
+            <td><a href="https://www.youtube.com/channel/UCUqb8omUshWynZDFl8cZO7A" target="_blank">youtube.com — SEO Fight Club</a></td>
+            <td><span class="badge live"><i class="ti ti-circle-check"></i> Live</span></td>
+            <td>Active, latest ep June 2025</td>
+          </tr>
+          <tr>
+            <td class="chan-name">Search Engine Land</td>
+            <td><a href="https://www.youtube.com/user/searchengineland" target="_blank">youtube.com — Search Engine Land</a></td>
+            <td><span class="badge live"><i class="ti ti-circle-check"></i> Live</span></td>
+            <td>Active, April 2026 upload</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ── Tool tutorials ── -->
+    <div class="sec-head"><i class="ti ti-tools"></i> Tool Tutorial Resources</div>
+    <div class="table-card">
+      <table>
+        <thead><tr>
+          <th style="width:28%">Resource</th>
+          <th style="width:36%">Verified URL</th>
+          <th style="width:16%">Status</th>
+          <th style="width:20%">Note</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td class="chan-name">Screaming Frog (YouTube)</td>
+            <td><a href="https://www.youtube.com/c/ScreamingFrogSEO" target="_blank">youtube.com/c/ScreamingFrogSEO</a></td>
+            <td><span class="badge live"><i class="ti ti-circle-check"></i> Live</span></td>
+            <td>Confirmed active channel</td>
+          </tr>
+          <tr>
+            <td class="chan-name">Screaming Frog Tutorials</td>
+            <td><a href="https://www.screamingfrog.co.uk/seo-spider/tutorials/" target="_blank">screamingfrog.co.uk/tutorials</a></td>
+            <td><span class="badge live"><i class="ti ti-circle-check"></i> Live</span></td>
+            <td>Confirmed active</td>
+          </tr>
+          <tr>
+            <td class="chan-name">GSC Tutorial Playlist</td>
+            <td><a href="https://www.youtube.com/playlist?list=PLKoqnv2vTMUPOalM1zuWIPAcPMbSP0Xrl" target="_blank">GSC Tutorial Playlist</a></td>
+            <td><span class="badge fixed"><i class="ti ti-refresh"></i> Redirected</span></td>
+            <td class="note-cell">Redirects to Ahrefs Tutorials — use <a href="https://www.youtube.com/c/AhrefsCom" target="_blank">Ahrefs channel</a> directly</td>
+          </tr>
+          <tr>
+            <td class="chan-name">Class Central — Ahrefs Tech SEO</td>
+            <td><a href="https://ahrefs.com/academy/ahrefs-youtube/technical-seo" target="_blank">ahrefs.com/academy — Tech SEO</a></td>
+            <td><span class="badge live"><i class="ti ti-circle-check"></i> Live</span></td>
+            <td>Updated direct link to Ahrefs Academy</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Summary -->
+   
+
+  </div>
+</body>
+</html>
